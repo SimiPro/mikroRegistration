@@ -2,7 +2,7 @@ package com.belongo.services.registration
 
 
 import com.belongo.services.registration.backend.ScalaObjectMapper
-import org.springframework.amqp.core.TopicExchange
+import org.springframework.amqp.core.{BindingBuilder, Queue, TopicExchange}
 import org.springframework.amqp.rabbit.connection.ConnectionFactory
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter
@@ -22,6 +22,13 @@ class UserRegistrationConfiguration {
   @Bean
   @Primary
   def scalaObjectMapper() = new ScalaObjectMapper()
+
+  @Bean
+  def queue() = new Queue(queueName)
+
+
+  @Bean
+  def binding(queue: Queue, exchange: TopicExchange) = BindingBuilder.bind(queue).to(exchange).`with`(queueName)
 
   @Bean
   def rabbitTemplate(connectionFactory: ConnectionFactory) = {
